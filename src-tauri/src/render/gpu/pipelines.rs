@@ -460,19 +460,6 @@ impl GpuPipelines {
             },
             count: None,
         });
-        for offset in 15..18u32 {
-            bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry {
-                binding: offset + MAX_MASK_BINDINGS,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Texture {
-                    sample_type: wgpu::TextureSampleType::Float { filterable: true },
-                    view_dimension: wgpu::TextureViewDimension::D2,
-                    multisampled: false,
-                },
-                count: None,
-            });
-        }
-
         bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry {
             binding: 10 + MAX_MASK_BINDINGS,
             visibility: wgpu::ShaderStages::COMPUTE,

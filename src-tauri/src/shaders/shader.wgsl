@@ -137,22 +137,6 @@ struct GlobalAdjustments {
 
     monochrome: MonochromeSettings,
 
-    diffusion_enabled: f32,
-    diffusion_direct: f32,
-    diffusion_scattered: f32,
-    diffusion_wr0: f32,
-    diffusion_wr1: f32,
-    diffusion_wr2: f32,
-    diffusion_wg0: f32,
-    diffusion_wg1: f32,
-    diffusion_wg2: f32,
-    diffusion_wb0: f32,
-    diffusion_wb1: f32,
-    diffusion_wb2: f32,
-    diffusion_radius0: f32,
-    diffusion_radius1: f32,
-    diffusion_radius2: f32,
-    _pad_diffusion: f32,
 }
 
 struct MaskAdjustments {
@@ -250,9 +234,6 @@ const HSL_RANGES: array<HslRange, 8> = array<HslRange, 8>(
 @group(0) @binding(13) var tone_base_texture: texture_2d<f32>;
 @group(0) @binding(14) var haze_texture: texture_2d<f32>;
 @group(0) @binding(15) var airlight_texture: texture_2d<f32>;
-@group(0) @binding(16) var diffusion_blur0: texture_2d<f32>;
-@group(0) @binding(17) var diffusion_blur1: texture_2d<f32>;
-@group(0) @binding(18) var diffusion_blur2: texture_2d<f32>;
 
 const GF_LUMA_FLOOR: f32 = 1.0e-4;
 const HZ_OMEGA: f32 = 0.95;
@@ -2045,20 +2026,6 @@ fn light_protection(color: vec3<f32>) -> f32 {
     return 1.0 - smoothstep(1.0, 2.2, get_luma(max(color, vec3<f32>(0.0))));
 }
 
-fn apply_diffusion(color: vec3<f32>, uv: vec2<f32>) -> vec3<f32> {
-    if (adjustments.global.diffusion_enabled < 0.5) { return color; }
-    let g = adjustments.global;
-    let b0 = textureSampleLevel(diffusion_blur0, light_sampler, uv, 0.0).rgb;
-    let b1 = textureSampleLevel(diffusion_blur1, light_sampler, uv, 0.0).rgb;
-    let b2 = textureSampleLevel(diffusion_blur2, light_sampler, uv, 0.0).rgb;
-    let halo = vec3<f32>(
-        dot(vec3<f32>(b0.r, b1.r, b2.r), vec3<f32>(g.diffusion_wr0, g.diffusion_wr1, g.diffusion_wr2)),
-        dot(vec3<f32>(b0.g, b1.g, b2.g), vec3<f32>(g.diffusion_wg0, g.diffusion_wg1, g.diffusion_wg2)),
-        dot(vec3<f32>(b0.b, b1.b, b2.b), vec3<f32>(g.diffusion_wb0, g.diffusion_wb1, g.diffusion_wb2))
-    );
-    return color * g.diffusion_direct + halo;
-}
-
 fn apply_glow_bloom(color: vec3<f32>, bloom: vec3<f32>, amount: f32) -> vec3<f32> {
     let luma = get_luma(max(color, vec3<f32>(0.0)));
     let depth = 0.5 + 0.5 * smoothstep(0.0, 0.2, luma);
@@ -2302,8 +2269,6 @@ fn main(
     }
 
     var composite_rgb_linear = processed_rgb;
-    let diffusion_uv = (vec2<f32>(absolute_coord) + 0.5) / full_dims;
-    composite_rgb_linear = apply_diffusion(composite_rgb_linear, diffusion_uv);
     composite_rgb_linear = apply_white_balance(composite_rgb_linear, t_wb_log_gains);
     composite_rgb_linear = apply_centre_tonal_and_color(composite_rgb_linear, adjustments.global.centre, vec2<f32>(adjustments.global.centre_x, adjustments.global.centre_y), absolute_coord_i);
     let tone_stats = textureLoad(airlight_texture, vec2<i32>(2, 0), 0);

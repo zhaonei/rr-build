@@ -350,9 +350,5 @@
   "vignetteMidpoint": 50,
   "vignetteRoundness": 0,
   "whiteBalance": null,
-  "whites": 0,
-  "lensFilterEnabled": 0,
-  "lensFilterFamily": 1,
-  "lensFilterGrade": 2,
-  "lensFilterIntensity": 100
+  "whites": 0
 }

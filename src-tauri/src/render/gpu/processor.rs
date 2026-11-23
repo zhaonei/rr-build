@@ -1682,38 +1682,6 @@ impl GpuProcessor {
                 let did_create_sharpness_blur = (need_sharpen || need_grain_softness)
                     && run_blur(1.0, &self.sharpness_blur_view);
 
-                let diffusion_on = adjustments.global.diffusion_enabled > 0.5;
-                let mut _diffusion_textures: Vec<wgpu::Texture> = Vec::new();
-                let mut diffusion_views: [Option<wgpu::TextureView>; 3] = [None, None, None];
-                if diffusion_on {
-                    let radii = [
-                        adjustments.global.diffusion_radius0,
-                        adjustments.global.diffusion_radius1,
-                        adjustments.global.diffusion_radius2,
-                    ];
-                    for (index, radius) in radii.into_iter().enumerate() {
-                        let texture = device.create_texture(&wgpu::TextureDescriptor {
-                            label: Some("Diffusion Blur"),
-                            size: wgpu::Extent3d {
-                                width: input_width,
-                                height: input_height,
-                                depth_or_array_layers: 1,
-                            },
-                            mip_level_count: 1,
-                            sample_count: 1,
-                            dimension: wgpu::TextureDimension::D2,
-                            format: wgpu::TextureFormat::Rgba16Float,
-                            usage: wgpu::TextureUsages::TEXTURE_BINDING
-                                | wgpu::TextureUsages::STORAGE_BINDING,
-                            view_formats: &[],
-                        });
-                        let view = texture.create_view(&Default::default());
-                        run_blur(radius.max(1.0), &view);
-                        diffusion_views[index] = Some(view);
-                        _diffusion_textures.push(texture);
-                    }
-                }
-
                 let mut main_encoder = device.create_command_encoder(&Default::default());
 
                 let mut tile_adjustments = adjustments;
@@ -1792,17 +1760,6 @@ impl GpuProcessor {
                     binding: 14 + MAX_MASK_BINDINGS,
                     resource: wgpu::BindingResource::TextureView(airlight_view),
                 });
-
-                for index in 0..3u32 {
-                    bind_group_entries.push(wgpu::BindGroupEntry {
-                        binding: 15 + index + MAX_MASK_BINDINGS,
-                        resource: wgpu::BindingResource::TextureView(
-                            diffusion_views[index as usize]
-                                .as_ref()
-                                .unwrap_or(&self.pipelines.dummy_blur_view),
-                        ),
-                    });
-                }
 
                 let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
                     label: Some("Tile Bind Group"),

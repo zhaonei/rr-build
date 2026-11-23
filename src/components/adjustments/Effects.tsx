@@ -47,23 +47,6 @@ interface EffectsPanelProps {
   onDragStateChange?: (isDragging: boolean) => void;
 }
 
-const LENS_FILTER_FAMILIES = [
-  { label: 'Pro-Mist', value: '0' },
-  { label: 'Black Pro-Mist', value: '1' },
-  { label: 'Glimmerglass', value: '2' },
-  { label: 'Black Glimmerglass', value: '3' },
-  { label: 'Fog', value: '4' },
-  { label: 'Black Fog', value: '5' },
-];
-
-const LENS_FILTER_GRADES = [
-  { label: '1/8', value: '0' },
-  { label: '1/4', value: '1' },
-  { label: '1/2', value: '2' },
-  { label: '1', value: '3' },
-  { label: '2', value: '4' },
-];
-
 interface BokehShapeSwitchProps {
   selectedShape: string;
   onShapeChange: (shape: string) => void;
@@ -506,43 +489,6 @@ function EffectsPanel({
             value={adjustments.halationAmount}
             onDragStateChange={onDragStateChange}
           />
-
-          {!isForMask && (
-            <Switch
-              label={t('adjustments.effects.lensFilter')}
-              checked={adjustments.lensFilterEnabled === 1}
-              onChange={(value: boolean) =>
-                handleAdjustmentChange(CreativeAdjustment.LensFilterEnabled, value ? 1 : 0)
-              }
-            />
-          )}
-
-          {!isForMask && adjustments.lensFilterEnabled === 1 && (
-            <>
-              <Dropdown<string>
-                options={LENS_FILTER_FAMILIES}
-                value={String(adjustments.lensFilterFamily)}
-                onChange={(value) => handleAdjustmentChange(CreativeAdjustment.LensFilterFamily, Number(value))}
-              />
-              <Dropdown<string>
-                options={LENS_FILTER_GRADES}
-                value={String(adjustments.lensFilterGrade)}
-                onChange={(value) => handleAdjustmentChange(CreativeAdjustment.LensFilterGrade, Number(value))}
-              />
-              <Slider
-                resetKey="lensFilterIntensity"
-                label={t('adjustments.effects.lensFilterIntensity')}
-                max={100}
-                min={0}
-                onChange={(e: SliderChangeEvent) =>
-                  handleAdjustmentChange(CreativeAdjustment.LensFilterIntensity, e.target.value)
-                }
-                step={1}
-                value={adjustments.lensFilterIntensity}
-                onDragStateChange={onDragStateChange}
-              />
-            </>
-          )}
 
           {!isForMask && (
             <Slider

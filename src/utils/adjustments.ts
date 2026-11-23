@@ -229,10 +229,6 @@ export const getRelightLightColor = (light: RelightLight): string => {
 export enum CreativeAdjustment {
   GlowAmount = 'glowAmount',
   HalationAmount = 'halationAmount',
-  LensFilterEnabled = 'lensFilterEnabled',
-  LensFilterFamily = 'lensFilterFamily',
-  LensFilterGrade = 'lensFilterGrade',
-  LensFilterIntensity = 'lensFilterIntensity',
   FlareAmount = 'flareAmount',
 }
 
@@ -339,10 +335,6 @@ export interface Adjustments {
   flipVertical: boolean;
   flareAmount: number;
   glowAmount: number;
-  lensFilterEnabled: number;
-  lensFilterFamily: number;
-  lensFilterGrade: number;
-  lensFilterIntensity: number;
   grainAmount: number;
   grainRoughness: number;
   grainSize: number;
@@ -1021,7 +1013,7 @@ export const ADJUSTMENT_GROUPS: Record<string, AdjustmentGroup[]> = {
     { label: 'modals.copyPaste.groups.grain', keys: [Effect.GrainAmount, Effect.GrainRoughness, Effect.GrainSize] },
     {
       label: 'modals.copyPaste.groups.halationGlow',
-      keys: [CreativeAdjustment.GlowAmount, CreativeAdjustment.HalationAmount, CreativeAdjustment.FlareAmount, CreativeAdjustment.LensFilterEnabled, CreativeAdjustment.LensFilterFamily, CreativeAdjustment.LensFilterGrade, CreativeAdjustment.LensFilterIntensity],
+      keys: [CreativeAdjustment.GlowAmount, CreativeAdjustment.HalationAmount, CreativeAdjustment.FlareAmount],
     },
     {
       label: 'modals.copyPaste.groups.lut',
@@ -1211,10 +1203,6 @@ export const ADJUSTMENT_SECTIONS: Sections = {
     DetailsAdjustment.NegativeContrast,
   ],
   effects: [
-    CreativeAdjustment.LensFilterEnabled,
-    CreativeAdjustment.LensFilterFamily,
-    CreativeAdjustment.LensFilterGrade,
-    CreativeAdjustment.LensFilterIntensity,
     CreativeAdjustment.GlowAmount,
     CreativeAdjustment.HalationAmount,
     CreativeAdjustment.FlareAmount,
