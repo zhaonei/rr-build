@@ -1097,7 +1097,7 @@ fn lens_filter_values(js: &serde_json::Value) -> [f32; 8] {
     [1.0, direct, scattered, row[2], row[3], row[4], row[5], 0.0]
 }
 
-fn get_all_adjustments_from_json(
+pub fn get_all_adjustments_from_json(
     js_adjustments: &serde_json::Value,
     is_raw: bool,
     as_shot: AsShot,
