@@ -1092,18 +1092,14 @@ const DIFFUSION_TABLE: [[f32; 14]; 30] = [
 ];
 
 fn lens_filter_values(js: &serde_json::Value) -> [f32; 16] {
-    let lookup = |section: &str, key: &str| -> Option<f64> {
-        js.get(section)
-            .and_then(|s| s.get(key))
-            .and_then(|v| v.as_f64())
-    };
-    let enabled = lookup("effects", "lensFilterEnabled").unwrap_or(0.0);
+    let lookup = |key: &str| -> Option<f64> { js.get(key).and_then(|v| v.as_f64()) };
+    let enabled = lookup("lensFilterEnabled").unwrap_or(0.0);
     if enabled < 0.5 {
         return [0.0; 16];
     }
-    let family = lookup("effects", "lensFilterFamily").unwrap_or(1.0).clamp(0.0, 5.0) as usize;
-    let grade = lookup("effects", "lensFilterGrade").unwrap_or(2.0).clamp(0.0, 4.0) as usize;
-    let intensity = (lookup("effects", "lensFilterIntensity").unwrap_or(100.0) / 100.0).clamp(0.0, 1.0) as f32;
+    let family = lookup("lensFilterFamily").unwrap_or(1.0).clamp(0.0, 5.0) as usize;
+    let grade = lookup("lensFilterGrade").unwrap_or(2.0).clamp(0.0, 4.0) as usize;
+    let intensity = (lookup("lensFilterIntensity").unwrap_or(100.0) / 100.0).clamp(0.0, 1.0) as f32;
     let row = DIFFUSION_TABLE[family * 5 + grade];
     let absorbed = (1.0 - row[0] - row[1]).max(0.0);
     let scattered = row[1] * intensity;
