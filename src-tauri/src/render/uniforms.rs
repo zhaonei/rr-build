@@ -1022,7 +1022,6 @@ fn get_mask_adjustments_from_json(
     }
 }
 
-pub 
 pub fn get_all_adjustments_from_json(
     js_adjustments: &serde_json::Value,
     is_raw: bool,
