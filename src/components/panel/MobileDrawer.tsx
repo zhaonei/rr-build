@@ -107,7 +107,7 @@ export default function MobileDrawer({
   return (
     <div
       className={clsx(
-        'shrink-0 relative flex flex-col overflow-hidden rounded-t-xl border-t border-surface/60 bg-bg-secondary/85 backdrop-blur-xl',
+        'shrink-0 relative flex flex-col overflow-hidden rounded-t-xl border-t border-surface/60 bg-bg-secondary',
         !isDragging && 'shadow-[0_-8px_24px_rgba(0,0,0,0.35)]',
       )}
       style={{

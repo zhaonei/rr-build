@@ -1,4 +1,4 @@
-import { type RefObject, type PointerEvent as ReactPointerEvent } from 'react';
+import { type RefObject, type PointerEvent as ReactPointerEvent, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +9,8 @@ import Editor from '../panel/Editor';
 import BottomBar from '../panel/BottomBar';
 import Resizer from '../ui/Resizer';
 import { MobilePanelSwitcher } from '../panel/PanelSwitcher';
+import MobileDrawer from '../panel/MobileDrawer';
+import { useContainerSize } from '../../hooks/useContainerSize';
 
 import { useEditorStore } from '../../store/useEditorStore';
 import { isFilmstripDocked, useUIStore } from '../../store/useUIStore';
@@ -210,55 +212,100 @@ export default function EditorView({
     </div>
   );
 
-  const editorMobilePanelNode =
-    layoutMode === 'compact' ? (
-      <div
-        className={clsx(
-          'flex overflow-hidden shrink-0 flex-col bg-bg-secondary rounded-lg',
-          !isResizing && !isInstantTransition && 'transition-all duration-300 ease-in-out',
-        )}
-        style={{
-          height: isFullScreen ? 0 : activePanel ? compactEditorPanelHeight : compactEditorPanelCollapsedHeight,
-          opacity: isFullScreen ? 0 : 1,
-        }}
-      >
-        {activePanel && !isFullScreen && (
-          <Resizer
-            direction={Orientation.Horizontal}
-            onMouseDown={createResizeHandler('compact', compactEditorPanelHeight)}
-            onDoubleClick={createResizeResetHandler('compact')}
-          />
-        )}
-        <div className="min-h-0 flex-1 overflow-hidden relative">
-          <AnimatePresence mode="wait">
-            {activePanel && (
-              <motion.div
-                key={activePanel}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.15 }}
-                className="absolute inset-0 overflow-y-auto custom-scrollbar"
-              >
-                {renderAppPanel(activePanel)}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        <MobilePanelSwitcher activePanel={activePanel} onPanelSelect={handlePanelSelect} />
-        <div className="shrink-0 border-t border-surface">{editorBottomBarComponent}</div>
-      </div>
-    ) : null;
+  const [canvasRef] = useContainerSize<HTMLDivElement>();
+  const [rootRef, rootSize] = useContainerSize<HTMLDivElement>();
+  const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelHeight);
+  const [drawerMinHeight, setDrawerMinHeight] = useState(compactEditorPanelCollapsedHeight);
+
+  const drawerMaxHeight = Math.max(drawerMinHeight, Math.round(rootSize.height * 0.75));
+  const drawerDefaultHeight = Math.min(
+    drawerMaxHeight,
+    Math.max(drawerMinHeight, Math.round(rootSize.height * 0.45)),
+  );
+  const drawerHeightValue = Math.max(
+    drawerMinHeight,
+    Math.min(drawerHeight ?? drawerDefaultHeight, drawerMaxHeight),
+  );
+  const isDrawerCollapsed = drawerHeightValue <= drawerMinHeight + 1;
+
+  useEffect(() => {
+    if (layoutMode !== 'compact') return;
+    const node = canvasRef.current;
+    if (!node) return;
+
+    const pointers = new Set<number>();
+    const handlePointerDown = (event: PointerEvent) => {
+      pointers.add(event.pointerId);
+      if (pointers.size >= 2) setDrawerHeight(drawerMinHeight);
+    };
+    const handlePointerUp = (event: PointerEvent) => pointers.delete(event.pointerId);
+
+    node.addEventListener('pointerdown', handlePointerDown, { capture: true });
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+    return () => {
+      node.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+  }, [layoutMode, drawerMinHeight]);
+
+  const handleDrawerSnap = (height: number) => {
+    if (height <= drawerMinHeight + 24) {
+      setDrawerHeight(drawerMinHeight);
+      return;
+    }
+    setDrawerHeight(Math.min(drawerMaxHeight, Math.max(drawerMinHeight, Math.round(height))));
+  };
+
+  const handleToggleDrawer = () => {
+    setDrawerHeight(isDrawerCollapsed ? drawerDefaultHeight : drawerMinHeight);
+  };
+
+  const handleQuickPanelSelect = (panelId: Panel) => {
+    handlePanelSelect(panelId);
+    if (isDrawerCollapsed) {
+      setDrawerHeight(drawerDefaultHeight);
+    }
+  };
 
   return (
-    <div className={clsx('flex grow h-full min-h-0', layoutMode === 'compact' ? 'flex-col gap-2' : 'flex-col')}>
-      <div className={clsx('relative flex-1 flex flex-col min-w-0', layoutMode === 'compact' && 'min-h-0')}>
+    <div
+      ref={rootRef}
+      className={clsx(
+        'flex grow h-full min-h-0',
+        layoutMode === 'compact' ? 'relative flex-col' : 'flex-col',
+      )}
+    >
+      <div
+        ref={canvasRef}
+        className={clsx('relative flex-1 flex flex-col min-w-0', layoutMode === 'compact' && 'min-h-0')}
+      >
         {editorNode}
         <AnimatePresence>
           {isFilmstripInSidePanel && isDraggingFilmstrip && <FilmstripDropzone height={bottomPanelHeight} />}
         </AnimatePresence>
       </div>
-      {layoutMode === 'compact' ? editorMobilePanelNode : editorBottomBarNode}
+      {layoutMode === 'compact' ? (
+        <MobileDrawer
+          height={drawerHeightValue}
+          maxHeight={drawerMaxHeight}
+          isCollapsed={isDrawerCollapsed}
+          isHidden={isFullScreen}
+          activePanel={activePanel}
+          onHeightChange={setDrawerHeight}
+          onSnap={handleDrawerSnap}
+          onToggleCollapsed={handleToggleDrawer}
+          onMinHeightChange={setDrawerMinHeight}
+          renderPanel={renderAppPanel}
+          switcher={
+            <MobilePanelSwitcher activePanel={activePanel} onPanelSelect={handleQuickPanelSelect} />
+          }
+          footer={editorBottomBarComponent}
+        />
+      ) : (
+        editorBottomBarNode
+      )}
     </div>
   );
 }
