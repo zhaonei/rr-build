@@ -1686,8 +1686,12 @@ impl GpuProcessor {
                 let mut _diffusion_textures: Vec<wgpu::Texture> = Vec::new();
                 let mut diffusion_views: [Option<wgpu::TextureView>; 3] = [None, None, None];
                 if diffusion_on {
-                    let base_radius = adjustments.global.diffusion_scale.max(1.0);
-                    for (index, multiplier) in [1.0f32, 2.43, 5.9].into_iter().enumerate() {
+                    let radii = [
+                        adjustments.global.diffusion_radius0,
+                        adjustments.global.diffusion_radius1,
+                        adjustments.global.diffusion_radius2,
+                    ];
+                    for (index, radius) in radii.into_iter().enumerate() {
                         let texture = device.create_texture(&wgpu::TextureDescriptor {
                             label: Some("Diffusion Blur"),
                             size: wgpu::Extent3d {
@@ -1704,7 +1708,7 @@ impl GpuProcessor {
                             view_formats: &[],
                         });
                         let view = texture.create_view(&Default::default());
-                        run_blur(base_radius * multiplier, &view);
+                        run_blur(radius.max(1.0), &view);
                         diffusion_views[index] = Some(view);
                         _diffusion_textures.push(texture);
                     }

@@ -101,7 +101,15 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${ANDROID_KEY_BASE64:-}" ] || [ -z "${ANDROID_KEY_ALIAS:-}" ]; then
-            echo "No keystore secrets found - falling back to debug signing."
+            echo "No keystore secrets found - generating an ephemeral release key."
+            keytool -genkeypair -v -keystore "$RUNNER_TEMP/keystore.jks" \
+              -alias rapidraw -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass rapidraw -keypass rapidraw \
+              -dname "CN=RapidRAW, OU=Build, O=RapidRAW, L=NA, S=NA, C=US"
+            cd src-tauri/gen/android
+            echo "keyAlias=rapidraw" > keystore.properties
+            echo "password=rapidraw" >> keystore.properties
+            echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
             exit 0
           fi
           cd src-tauri/gen/android
@@ -118,6 +126,7 @@ jobs:
           ORT_SKIP_DOWNLOAD: '1'
           ORT_STRATEGY: manual
           ORT_LIB_LOCATION: ${{ github.workspace }}/src-tauri/libs/arm64-v8a
+          CARGO_PROFILE_RELEASE_STRIP: 'true'
         run: |
           set -euo pipefail
           mkdir -p src-tauri/libs/arm64-v8a
