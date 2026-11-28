@@ -147,7 +147,7 @@ export default function MobileDrawer({
 
       <div className="relative min-h-0 flex-1 overflow-hidden">
         {activePanel && !isCollapsed && (
-          <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar pb-14">
+          <div className="absolute inset-0 overflow-y-auto overscroll-contain custom-scrollbar">
             {renderPanel(activePanel)}
           </div>
         )}

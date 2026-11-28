@@ -1,4 +1,5 @@
 import { type RefObject, type PointerEvent as ReactPointerEvent, useEffect, useState } from 'react';
+import { MoreHorizontal } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -215,6 +216,7 @@ export default function EditorView({
   const [canvasRef] = useContainerSize<HTMLDivElement>();
   const [rootRef, rootSize] = useContainerSize<HTMLDivElement>();
   const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelCollapsedHeight);
+  const [showActions, setShowActions] = useState(false);
   const [drawerMinHeight, setDrawerMinHeight] = useState(compactEditorPanelCollapsedHeight);
 
   // Panel heights follow the tool's content, as the reference app's sheet does: a crop is short,
@@ -330,10 +332,22 @@ export default function EditorView({
         editorBottomBarNode
       )}
       {layoutMode === 'compact' && (
-        <div className="pointer-events-none absolute bottom-1 right-1 z-40">
-          <div className="pointer-events-auto overflow-hidden rounded-full bg-bg-secondary/92 shadow-lg">
-            {editorBottomBarComponent}
-          </div>
+        <div className="absolute right-14 top-2 z-40 flex flex-col items-end gap-1">
+          <button
+            onClick={() => setShowActions((prev) => !prev)}
+            aria-label="Actions"
+            className={clsx(
+              'flex h-10 w-10 items-center justify-center rounded-full border border-surface transition-colors',
+              showActions ? 'bg-surface text-text-primary' : 'bg-bg-secondary/80 text-text-secondary',
+            )}
+          >
+            <MoreHorizontal size={18} />
+          </button>
+          {showActions && (
+            <div className="overflow-hidden rounded-full bg-bg-secondary shadow-xl">
+              {editorBottomBarComponent}
+            </div>
+          )}
         </div>
       )}
     </div>
