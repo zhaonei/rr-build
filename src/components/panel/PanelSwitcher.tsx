@@ -311,7 +311,7 @@ export function MobilePanelSwitcher({
   return (
     <div
       className={clsx(
-        'flex items-center p-1.5 gap-1 shrink-0 custom-scrollbar',
+        'flex items-center gap-1 shrink-0 px-1.5 py-1 custom-scrollbar',
         isVertical
           ? 'flex-col overflow-y-auto h-full border-l border-surface'
           : 'flex-row overflow-x-auto w-full border-t border-surface',
@@ -327,16 +327,14 @@ export function MobilePanelSwitcher({
             onClick={() => onPanelSelect(id)}
             aria-label={t(PANEL_TITLES[id])}
             className={clsx(
-              'flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg transition-colors',
+              'flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[11px] transition-colors',
               isActive
                 ? 'bg-surface text-text-primary'
                 : 'text-text-secondary active:bg-surface',
             )}
           >
-            <Icon size={22} />
-            <span className="max-w-full truncate px-0.5 text-[10px] leading-none">
-              {t(PANEL_TITLES[id])}
-            </span>
+            <Icon size={15} />
+            <span className="max-w-24 truncate">{t(PANEL_TITLES[id])}</span>
           </button>
         );
       })}

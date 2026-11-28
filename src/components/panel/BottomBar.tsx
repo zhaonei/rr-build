@@ -158,6 +158,7 @@ export default function BottomBar({
 }: BottomBarProps) {
   const { t } = useTranslation();
   const { handleToggleFlag } = useLibraryActions();
+  const [showExtras, setShowExtras] = useState(false);
 
   const { isInstantTransition, uiVisibility, setUI } = useUIStore(
     useShallow((state) => ({
@@ -360,20 +361,25 @@ export default function BottomBar({
 
       <div
         className={clsx(
-          'shrink-0 h-12 flex items-center justify-between px-3',
+          'relative shrink-0 flex items-center justify-between px-3',
+          layoutMode === 'compact' ? 'h-10' : 'h-12',
           !isLibraryView && 'border-t transition-colors duration-300',
           !isLibraryView && hasBottomFilmstrip && isFilmstripVisible ? 'border-surface' : 'border-transparent',
         )}
       >
-        <div className="flex items-center gap-3">
-          <StarRating rating={rating} onRate={onRate} disabled={isRatingDisabled} />
-          <FlagToggles
-            flag={flag}
-            onToggle={(option) => handleToggleFlag(option)}
-            inactiveClassName="text-text-secondary hover:text-accent"
-            disabled={isRatingDisabled}
-          />
-          <div className="h-5 w-px bg-surface"></div>
+        <div className="flex items-center gap-2">
+          {layoutMode !== 'compact' && (
+            <>
+              <StarRating rating={rating} onRate={onRate} disabled={isRatingDisabled} />
+              <FlagToggles
+                flag={flag}
+                onToggle={(option) => handleToggleFlag(option)}
+                inactiveClassName="text-text-secondary hover:text-accent"
+                disabled={isRatingDisabled}
+              />
+              <div className="h-5 w-px bg-surface"></div>
+            </>
+          )}
           <div className="flex items-center gap-2">
             <button
               className="relative w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
@@ -443,11 +449,37 @@ export default function BottomBar({
 
             <button
               className="w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors"
-              onClick={onOpenCopyPasteSettings}
+              onClick={() => {
+                if (layoutMode === 'compact') {
+                  setShowExtras((prev) => !prev);
+                  return;
+                }
+                onOpenCopyPasteSettings?.();
+              }}
               data-tooltip={t('ui.bottomBar.tooltips.copyPasteSettings')}
             >
               <Settings size={18} />
             </button>
+
+            {layoutMode === 'compact' && showExtras && (
+              <div className="absolute bottom-full right-2 z-40 mb-1 flex flex-col gap-2 rounded-lg border border-surface bg-bg-secondary p-2 shadow-xl">
+                <StarRating rating={rating} onRate={onRate} disabled={isRatingDisabled} />
+                <div className="flex items-center gap-2">
+                  <FlagToggles
+                    flag={flag}
+                    onToggle={(option) => handleToggleFlag(option)}
+                    inactiveClassName="text-text-secondary hover:text-accent"
+                    disabled={isRatingDisabled}
+                  />
+                  <button
+                    className="ml-auto rounded-md px-2 py-1 text-[11px] text-text-secondary hover:bg-surface"
+                    onClick={() => setShowExtras(false)}
+                  >
+                    {t('ui.bottomBar.tooltips.copyPasteSettings')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="h-5 w-px bg-surface"></div>

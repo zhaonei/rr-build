@@ -330,7 +330,7 @@ function App() {
     compactEditorPanelMinHeight,
     Math.min(compactEditorPanelHeightOverride ?? compactEditorPanelDefaultHeight, compactEditorPanelMaxHeight),
   );
-  const compactEditorPanelCollapsedHeight = 96;
+  const compactEditorPanelCollapsedHeight = 84;
 
   const { handleCopyAdjustments, handlePasteAdjustments, handleResetAdjustments, handleZoomChange } =
     useEditorActions();
