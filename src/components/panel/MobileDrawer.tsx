@@ -16,8 +16,9 @@ interface MobileDrawerProps {
   onToggleCollapsed: () => void;
   onMinHeightChange: (height: number) => void;
   renderPanel: (panel: Panel) => React.ReactNode;
-  footer: React.ReactNode;
+  footer?: React.ReactNode;
   switcher: React.ReactNode;
+  headerActions?: React.ReactNode;
 }
 
 export default function MobileDrawer({
@@ -33,6 +34,7 @@ export default function MobileDrawer({
   renderPanel,
   footer,
   switcher,
+  headerActions,
 }: MobileDrawerProps) {
   const isSliderDragging = useEditorStore((state) => state.isSliderDragging);
   const dragState = useRef<{ startY: number; startHeight: number; pointerId: number } | null>(null);
@@ -134,7 +136,7 @@ export default function MobileDrawer({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        className="flex h-8 shrink-0 items-center justify-center"
+        className="relative flex h-8 shrink-0 items-center justify-center"
         style={{ touchAction: 'none' }}
       >
         <div
@@ -143,6 +145,9 @@ export default function MobileDrawer({
             isDragging ? 'w-14 bg-accent' : 'w-10',
           )}
         />
+        {headerActions && (
+          <div className="absolute right-1.5 top-0 flex h-8 items-center gap-1">{headerActions}</div>
+        )}
       </div>
 
       <div className="relative min-h-0 flex-1 overflow-hidden">

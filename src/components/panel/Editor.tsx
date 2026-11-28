@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect, useImperativeHandle } from 'react';
 import FloatingHistogram from './editor/FloatingHistogram';
 import { Crop, PercentCrop } from 'react-image-crop';
-import { BarChart3, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import clsx from 'clsx';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -175,13 +175,22 @@ interface WgpuRenderState {
 }
 
 interface EditorProps {
+  histogramOpen?: boolean;
+  onToggleHistogram?(): void;
   onBackToLibrary(): void;
   onContextMenu(event: any): void;
   onImageSelect?(path: string, event?: any): void;
   transformWrapperRef: any;
 }
 
-export default function Editor({ onBackToLibrary, onContextMenu, onImageSelect, transformWrapperRef }: EditorProps) {
+export default function Editor({
+  histogramOpen = false,
+  onToggleHistogram,
+  onBackToLibrary,
+  onContextMenu,
+  onImageSelect,
+  transformWrapperRef,
+}: EditorProps) {
   const appSettings = useSettingsStore((s) => s.appSettings);
   const osPlatform = useSettingsStore((s) => s.osPlatform);
   const isFullScreen = useUIStore((s) => s.isFullScreen);
@@ -232,7 +241,6 @@ export default function Editor({ onBackToLibrary, onContextMenu, onImageSelect, 
   const { setAdjustments, toggleCompare, selectCompareMode } = useEditorActions();
 
   const [crop, setCrop] = useState<Crop | null>(null);
-  const [showHistogram, setShowHistogram] = useState(false);
   const prevCropParams = useRef<any>(null);
   const lastValidCropRef = useRef<PercentCrop | null>(null);
   const cropResizeStartRef = useRef<PercentCrop | null>(null);
@@ -2848,17 +2856,7 @@ export default function Editor({ onBackToLibrary, onContextMenu, onImageSelect, 
           {straightenOverlay}
         </div>
         <SpeedEditOverlay />
-        <button
-          onClick={() => setShowHistogram((prev) => !prev)}
-          aria-label="Histogram"
-          className={clsx(
-            'absolute right-2 top-2 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-surface transition-colors',
-            showHistogram ? 'bg-surface text-text-primary' : 'bg-bg-secondary/80 text-text-secondary',
-          )}
-        >
-          <BarChart3 size={18} />
-        </button>
-        {showHistogram && <FloatingHistogram onClose={() => setShowHistogram(false)} />}
+        {histogramOpen && <FloatingHistogram onClose={() => onToggleHistogram?.()} />}
       </div>
     </div>
   );

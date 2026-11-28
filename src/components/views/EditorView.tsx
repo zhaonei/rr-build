@@ -1,5 +1,5 @@
 import { type RefObject, type PointerEvent as ReactPointerEvent, useEffect, useState } from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { BarChart3, MoreHorizontal } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -128,6 +128,9 @@ export default function EditorView({
     })),
   );
 
+  const [showActions, setShowActions] = useState(false);
+  const [showHistogram, setShowHistogram] = useState(false);
+
   const { multiSelectedPaths, imageRatings, flag, isViewLoading } = useLibraryStore(
     useShallow((state) => ({
       multiSelectedPaths: state.multiSelectedPaths,
@@ -146,6 +149,8 @@ export default function EditorView({
 
   const editorNode = (
     <Editor
+      histogramOpen={showHistogram}
+      onToggleHistogram={() => setShowHistogram((prev) => !prev)}
       onBackToLibrary={handleBackToLibrary}
       onContextMenu={handleEditorContextMenu}
       onImageSelect={handleImageClick}
@@ -188,6 +193,36 @@ export default function EditorView({
     />
   );
 
+  const drawerHeaderActions = (
+    <div className="relative flex items-center gap-1">
+      <button
+        onClick={() => setShowHistogram((prev) => !prev)}
+        aria-label="Histogram"
+        className={clsx(
+          'flex h-7 w-7 items-center justify-center rounded-md transition-colors',
+          showHistogram ? 'bg-surface text-text-primary' : 'text-text-secondary active:bg-surface',
+        )}
+      >
+        <BarChart3 size={14} />
+      </button>
+      <button
+        onClick={() => setShowActions((prev) => !prev)}
+        aria-label="Actions"
+        className={clsx(
+          'flex h-7 w-7 items-center justify-center rounded-md transition-colors',
+          showActions ? 'bg-surface text-text-primary' : 'text-text-secondary active:bg-surface',
+        )}
+      >
+        <MoreHorizontal size={14} />
+      </button>
+      {showActions && (
+        <div className="absolute right-0 top-8 z-50 overflow-hidden rounded-full bg-bg-secondary shadow-xl">
+          {editorBottomBarComponent}
+        </div>
+      )}
+    </div>
+  );
+
   const editorBottomBarNode = (
     <div
       className={clsx(
@@ -216,7 +251,6 @@ export default function EditorView({
   const [canvasRef] = useContainerSize<HTMLDivElement>();
   const [rootRef, rootSize] = useContainerSize<HTMLDivElement>();
   const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelCollapsedHeight);
-  const [showActions, setShowActions] = useState(false);
   const [drawerMinHeight, setDrawerMinHeight] = useState(compactEditorPanelCollapsedHeight);
 
   // Panel heights follow the tool's content, as the reference app's sheet does: a crop is short,
@@ -324,6 +358,7 @@ export default function EditorView({
           onToggleCollapsed={handleToggleDrawer}
           onMinHeightChange={setDrawerMinHeight}
           renderPanel={renderAppPanel}
+          headerActions={drawerHeaderActions}
           switcher={
             <MobilePanelSwitcher activePanel={activePanel} onPanelSelect={handleQuickPanelSelect} />
           }
@@ -331,25 +366,7 @@ export default function EditorView({
       ) : (
         editorBottomBarNode
       )}
-      {layoutMode === 'compact' && (
-        <div className="absolute left-2 top-28 z-40 flex flex-col items-start gap-1">
-          <button
-            onClick={() => setShowActions((prev) => !prev)}
-            aria-label="Actions"
-            className={clsx(
-              'flex h-10 w-10 items-center justify-center rounded-full border border-surface transition-colors',
-              showActions ? 'bg-surface text-text-primary' : 'bg-bg-secondary/80 text-text-secondary',
-            )}
-          >
-            <MoreHorizontal size={18} />
-          </button>
-          {showActions && (
-            <div className="overflow-hidden rounded-full bg-bg-secondary shadow-xl">
-              {editorBottomBarComponent}
-            </div>
-          )}
-        </div>
-      )}
+
     </div>
   );
 }
