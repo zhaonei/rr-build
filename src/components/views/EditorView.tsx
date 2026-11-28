@@ -325,10 +325,16 @@ export default function EditorView({
           switcher={
             <MobilePanelSwitcher activePanel={activePanel} onPanelSelect={handleQuickPanelSelect} />
           }
-          footer={editorBottomBarComponent}
         />
       ) : (
         editorBottomBarNode
+      )}
+      {layoutMode === 'compact' && (
+        <div className="pointer-events-none absolute bottom-1 right-1 z-40">
+          <div className="pointer-events-auto overflow-hidden rounded-full bg-bg-secondary/92 shadow-lg">
+            {editorBottomBarComponent}
+          </div>
+        </div>
       )}
     </div>
   );

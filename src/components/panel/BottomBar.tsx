@@ -361,8 +361,8 @@ export default function BottomBar({
 
       <div
         className={clsx(
-          'relative shrink-0 flex items-center justify-between px-3',
-          layoutMode === 'compact' ? 'h-10' : 'h-12',
+          'relative shrink-0 flex items-center justify-between',
+          layoutMode === 'compact' ? 'h-9 px-1.5' : 'h-12 px-3',
           !isLibraryView && 'border-t transition-colors duration-300',
           !isLibraryView && hasBottomFilmstrip && isFilmstripVisible ? 'border-surface' : 'border-transparent',
         )}
