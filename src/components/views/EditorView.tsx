@@ -144,15 +144,6 @@ export default function EditorView({
     })),
   );
 
-  const editorNode = (
-    <Editor
-      onBackToLibrary={handleBackToLibrary}
-      onContextMenu={handleEditorContextMenu}
-      onImageSelect={handleImageClick}
-      transformWrapperRef={transformWrapperRef}
-    />
-  );
-
   const editorBottomBarComponent = (
     <BottomBar
       filmstripHeight={bottomPanelHeight}
@@ -185,6 +176,37 @@ export default function EditorView({
       showZoomControls={!isAndroid}
       thumbnailAspectRatio={thumbnailAspectRatio}
       totalImages={sortedImageList.length}
+    />
+  );
+
+  const editorActionsComponent =
+    layoutMode === 'compact' ? (
+      <div className="relative flex flex-col items-start gap-1">
+        <button
+          onClick={() => setShowActions((prev) => !prev)}
+          aria-label="Actions"
+          className={clsx(
+            'flex h-10 w-10 items-center justify-center rounded-full border border-surface transition-colors',
+            showActions ? 'bg-surface text-text-primary' : 'bg-bg-secondary/80 text-text-secondary',
+          )}
+        >
+          <MoreHorizontal size={18} />
+        </button>
+        {showActions && (
+          <div className="overflow-hidden rounded-full bg-bg-secondary shadow-xl">
+            {editorBottomBarComponent}
+          </div>
+        )}
+      </div>
+    ) : null;
+
+  const editorNode = (
+    <Editor
+      mobileActions={editorActionsComponent}
+      onBackToLibrary={handleBackToLibrary}
+      onContextMenu={handleEditorContextMenu}
+      onImageSelect={handleImageClick}
+      transformWrapperRef={transformWrapperRef}
     />
   );
 
@@ -330,25 +352,6 @@ export default function EditorView({
         />
       ) : (
         editorBottomBarNode
-      )}
-      {layoutMode === 'compact' && (
-        <div className="absolute right-14 top-2 z-40 flex flex-col items-end gap-1">
-          <button
-            onClick={() => setShowActions((prev) => !prev)}
-            aria-label="Actions"
-            className={clsx(
-              'flex h-10 w-10 items-center justify-center rounded-full border border-surface transition-colors',
-              showActions ? 'bg-surface text-text-primary' : 'bg-bg-secondary/80 text-text-secondary',
-            )}
-          >
-            <MoreHorizontal size={18} />
-          </button>
-          {showActions && (
-            <div className="overflow-hidden rounded-full bg-bg-secondary shadow-xl">
-              {editorBottomBarComponent}
-            </div>
-          )}
-        </div>
       )}
     </div>
   );
