@@ -98,9 +98,11 @@ export default function MobileDrawer({
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     if (Math.abs(event.clientY - drag.startY) < DRAG_THRESHOLD) {
+      navigator.vibrate?.(8);
       onToggleCollapsed();
       return;
     }
+    navigator.vibrate?.(5);
     onSnap(height);
   };
 

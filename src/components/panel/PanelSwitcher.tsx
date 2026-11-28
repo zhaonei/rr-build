@@ -301,6 +301,7 @@ export function MobilePanelSwitcher({
     Panel.Export,
   ];
 
+  const { t } = useTranslation();
   const isVertical = placement === 'right';
 
   return (
@@ -320,14 +321,18 @@ export function MobilePanelSwitcher({
           <button
             key={id}
             onClick={() => onPanelSelect(id)}
+            aria-label={t(PANEL_TITLES[id])}
             className={clsx(
-              'p-2 rounded-md shrink-0 transition-colors',
+              'flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg transition-colors',
               isActive
                 ? 'bg-surface text-text-primary'
-                : 'text-text-secondary hover:bg-surface hover:text-text-primary',
+                : 'text-text-secondary active:bg-surface',
             )}
           >
-            <Icon size={20} />
+            <Icon size={22} />
+            <span className="max-w-full truncate px-0.5 text-[10px] leading-none">
+              {t(PANEL_TITLES[id])}
+            </span>
           </button>
         );
       })}

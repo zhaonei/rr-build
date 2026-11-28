@@ -217,10 +217,28 @@ export default function EditorView({
   const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelHeight);
   const [drawerMinHeight, setDrawerMinHeight] = useState(compactEditorPanelCollapsedHeight);
 
+  // Panel heights follow the tool's content, as the reference app's sheet does: a crop is short,
+  // grading is tall. Collapsed, the sheet sits at the tool dock's height.
+  const PANEL_PREFERRED_HEIGHT: Partial<Record<Panel, number>> = {
+    [Panel.Crop]: 240,
+    [Panel.Presets]: 320,
+    [Panel.Adjustments]: Math.round(rootSize.height * 0.5),
+    [Panel.Masks]: Math.round(rootSize.height * 0.55),
+    [Panel.Ai]: 300,
+    [Panel.Metadata]: 300,
+    [Panel.Export]: 340,
+    [Panel.FolderTree]: 320,
+    [Panel.Tethering]: 280,
+    [Panel.Filmstrip]: 180,
+  };
+
   const drawerMaxHeight = Math.max(drawerMinHeight, Math.round(rootSize.height * 0.75));
   const drawerDefaultHeight = Math.min(
     drawerMaxHeight,
-    Math.max(drawerMinHeight, Math.round(rootSize.height * 0.45)),
+    Math.max(
+      drawerMinHeight,
+      (activePanel && PANEL_PREFERRED_HEIGHT[activePanel]) || Math.round(rootSize.height * 0.45),
+    ),
   );
   const drawerHeightValue = Math.max(
     drawerMinHeight,
@@ -249,6 +267,12 @@ export default function EditorView({
       window.removeEventListener('pointercancel', handlePointerUp);
     };
   }, [layoutMode, drawerMinHeight]);
+
+  useEffect(() => {
+    if (layoutMode !== 'compact' || isDrawerCollapsed) return;
+    setDrawerHeight(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePanel, layoutMode]);
 
   const handleDrawerSnap = (height: number) => {
     if (height <= drawerMinHeight + 24) {
