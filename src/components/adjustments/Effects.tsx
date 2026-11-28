@@ -22,7 +22,6 @@ import {
   areSectionPropsEqual,
 } from '../../utils/adjustments';
 import Dropdown from '../ui/Dropdown';
-import LUTControl from './LUTControl';
 import ColorField, { normalizeHexColor, useParsedTextField } from '../ui/ColorField';
 import { ColorSwatch } from './Color';
 import { AppSettings } from '../../types/settings';
@@ -1156,20 +1155,6 @@ function EffectsPanel({
                   )}
                 </SpatialEffect>
               </div>
-            </AdjustmentSubSection>
-          )}
-
-          {!hiddenTools.includes('lut') && (
-            <AdjustmentSubSection id="lut" order={toolOrder.indexOf('lut')} title={t('adjustments.effects.lut')}>
-              <LUTControl
-                lutPath={adjustments.lutPath || null}
-                lutName={adjustments.lutName || null}
-                lutIntensity={adjustments.lutIntensity ?? 100}
-                onLutSelect={handleLutSelect}
-                onIntensityChange={handleLutIntensityChange}
-                onClear={handleLutClear}
-                onDragStateChange={onDragStateChange}
-              />
             </AdjustmentSubSection>
           )}
 

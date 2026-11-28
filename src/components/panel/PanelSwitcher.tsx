@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
 import {
+  Palette,
   SlidersHorizontal,
   Info,
   Crop,
@@ -27,6 +28,7 @@ export const PANEL_ICONS: Record<Panel, LucideIcon> = {
   [Panel.Masks]: Layers,
   [Panel.Ai]: Paintbrush,
   [Panel.Presets]: SwatchBook,
+  [Panel.Lut]: Palette,
   [Panel.Export]: FileInput,
   [Panel.FolderTree]: FolderIcon,
   [Panel.Tethering]: Camera,
@@ -40,6 +42,7 @@ const PANEL_TITLES: Record<Panel, ParseKeys> = {
   [Panel.Masks]: 'editor.switcher.tooltips.masks',
   [Panel.Ai]: 'editor.switcher.tooltips.inpaint',
   [Panel.Presets]: 'editor.switcher.tooltips.presets',
+  [Panel.Lut]: 'adjustments.effects.lut',
   [Panel.Export]: 'editor.switcher.tooltips.export',
   [Panel.FolderTree]: 'library.folders.sourcesTitle',
   [Panel.Tethering]: 'editor.switcher.tooltips.tethering',
@@ -298,6 +301,7 @@ export function MobilePanelSwitcher({
     Panel.Masks,
     Panel.Ai,
     Panel.Presets,
+    Panel.Lut,
     Panel.Export,
   ];
 

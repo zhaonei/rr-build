@@ -28,6 +28,7 @@ import { PANEL_ICONS } from './components/panel/PanelSwitcher';
 import DockedFilmstrip from './components/panel/DockedFilmstrip';
 import { getDropPlacement, layoutCollisionDetection, type LayoutDropData } from './utils/layoutDrop';
 import Controls from './components/panel/right/ControlsPanel';
+import LutPanel from './components/panel/right/LutPanel';
 import MetadataPanel from './components/panel/right/MetadataPanel';
 import CropPanel from './components/panel/right/CropPanel';
 import AdjustmentSliderResetProvider from './components/adjustments/AdjustmentSliderResetProvider';
@@ -765,6 +766,8 @@ function App() {
           return <MasksPanel />;
         case Panel.Ai:
           return <AIPanel />;
+        case Panel.Lut:
+          return <LutPanel />;
         case Panel.Presets:
           return <PresetsPanel onNavigateToCommunity={() => setUI({ activeView: 'community' })} />;
         case Panel.Tethering:

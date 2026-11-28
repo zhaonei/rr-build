@@ -79,6 +79,7 @@ const ALL_PANELS: Panel[] = [
   Panel.Masks,
   Panel.Ai,
   Panel.Presets,
+  Panel.Lut,
 ];
 
 const PANEL_REGIONS: PanelRegion[] = ['leftTop', 'leftBottom', 'rightTop', 'rightBottom'];
@@ -100,6 +101,7 @@ const DEFAULT_PANEL_DEFAULT_REGIONS: Partial<Record<Panel, PanelRegion>> = {
   [Panel.Masks]: 'rightTop',
   [Panel.Ai]: 'rightTop',
   [Panel.Presets]: 'rightTop',
+  [Panel.Lut]: 'rightTop',
 };
 
 export const DEFAULT_PANEL_WIDTH = 350;

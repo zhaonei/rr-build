@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RotateCcw, Copy, ClipboardPaste, PencilSparkles, ChartArea, LayoutList } from 'lucide-react';
+import { RotateCcw, Copy, ClipboardPaste, PencilSparkles, LayoutList } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import CollapsibleSection from '../../ui/CollapsibleSection';
 import AdjustmentSection from '../../adjustments/AdjustmentSection';
-import ConnectedWaveform from '../editor/ConnectedWaveform';
 import Resizer from '../../ui/Resizer';
 import AdjustmentSectionsSubMenu from './AdjustmentSectionsSubMenu';
 import {
@@ -270,16 +269,6 @@ export default function Controls({ mobileGrouped = false }: { mobileGrouped?: bo
             <PencilSparkles size={18} />
           </button>
           <button
-            className={clsx(
-              'p-2 rounded-full transition-colors',
-              isWaveformVisible ? 'bg-surface hover:bg-card-active' : 'hover:bg-surface',
-            )}
-            onClick={onToggleWaveform}
-            data-tooltip={t('editor.adjustments.tooltips.toggleAnalytics')}
-          >
-            <ChartArea size={18} />
-          </button>
-          <button
             className="p-2 rounded-full hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={!selectedImage}
             onClick={handleResetAdjustments}
@@ -290,26 +279,6 @@ export default function Controls({ mobileGrouped = false }: { mobileGrouped?: bo
         </div>
       </div>
 
-      <AnimatePresence initial={false}>
-        {isWaveformVisible && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: waveformHeight || 256, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: isResizingWaveform ? 0 : 0.2, ease: 'easeOut' }}
-            className="shrink-0 flex flex-col relative border-b border-surface overflow-hidden"
-          >
-            <div className="grow w-full h-full p-3 pb-2 min-h-0">
-              <ConnectedWaveform
-                setDisplayMode={setActiveWaveformChannel}
-                setAdjustments={setAdjustments}
-                theme={theme}
-              />
-            </div>
-            <Resizer direction={Orientation.Horizontal} onMouseDown={handleWaveformResize} />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {mobileGrouped && mobileSections.length > 0 && (
         <div className="shrink-0 flex gap-1 overflow-x-auto overscroll-contain custom-scrollbar px-2 py-2 border-b border-surface">
