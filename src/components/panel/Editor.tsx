@@ -175,20 +175,13 @@ interface WgpuRenderState {
 }
 
 interface EditorProps {
-  mobileActions?: React.ReactNode;
   onBackToLibrary(): void;
   onContextMenu(event: any): void;
   onImageSelect?(path: string, event?: any): void;
   transformWrapperRef: any;
 }
 
-export default function Editor({
-  mobileActions,
-  onBackToLibrary,
-  onContextMenu,
-  onImageSelect,
-  transformWrapperRef,
-}: EditorProps) {
+export default function Editor({ onBackToLibrary, onContextMenu, onImageSelect, transformWrapperRef }: EditorProps) {
   const appSettings = useSettingsStore((s) => s.appSettings);
   const osPlatform = useSettingsStore((s) => s.osPlatform);
   const isFullScreen = useUIStore((s) => s.isFullScreen);
@@ -2855,7 +2848,6 @@ export default function Editor({
           {straightenOverlay}
         </div>
         <SpeedEditOverlay />
-        {mobileActions && <div className="absolute left-2 top-2 z-40">{mobileActions}</div>}
         <button
           onClick={() => setShowHistogram((prev) => !prev)}
           aria-label="Histogram"
