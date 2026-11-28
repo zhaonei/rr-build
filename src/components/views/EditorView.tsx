@@ -332,7 +332,7 @@ export default function EditorView({
         editorBottomBarNode
       )}
       {layoutMode === 'compact' && (
-        <div className="absolute right-14 top-2 z-40 flex flex-col items-end gap-1">
+        <div className="absolute left-2 top-28 z-40 flex flex-col items-start gap-1">
           <button
             onClick={() => setShowActions((prev) => !prev)}
             aria-label="Actions"
