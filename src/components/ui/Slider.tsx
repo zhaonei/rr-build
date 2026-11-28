@@ -694,11 +694,14 @@ const Slider = ({
               ref={inputRef}
               step={step}
               type="text"
+              inputMode="decimal"
+              enterKeyHint="done"
+              autoComplete="off"
               value={inputValue}
             />
           ) : (
             <span
-              className={`text-sm text-text-primary w-full text-right select-none whitespace-nowrap ${disabled ? '' : 'cursor-text'}`}
+              className={`-my-1 flex min-h-8 w-full items-center justify-end py-1 text-sm text-text-primary select-none whitespace-nowrap ${disabled ? '' : 'cursor-text'}`}
               onClick={disabled ? undefined : handleValueClick}
               onDoubleClick={disabled ? undefined : handleReset}
               data-tooltip={disabled ? undefined : t('ui.slider.clickToEdit')}
