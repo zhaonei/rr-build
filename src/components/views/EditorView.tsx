@@ -214,7 +214,7 @@ export default function EditorView({
 
   const [canvasRef] = useContainerSize<HTMLDivElement>();
   const [rootRef, rootSize] = useContainerSize<HTMLDivElement>();
-  const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelHeight);
+  const [drawerHeight, setDrawerHeight] = useState<number | null>(compactEditorPanelCollapsedHeight);
   const [drawerMinHeight, setDrawerMinHeight] = useState(compactEditorPanelCollapsedHeight);
 
   // Panel heights follow the tool's content, as the reference app's sheet does: a crop is short,
@@ -222,8 +222,8 @@ export default function EditorView({
   const PANEL_PREFERRED_HEIGHT: Partial<Record<Panel, number>> = {
     [Panel.Crop]: 240,
     [Panel.Presets]: 320,
-    [Panel.Adjustments]: Math.round(rootSize.height * 0.5),
-    [Panel.Masks]: Math.round(rootSize.height * 0.55),
+    [Panel.Adjustments]: Math.round(rootSize.height * 0.45),
+    [Panel.Masks]: Math.round(rootSize.height * 0.48),
     [Panel.Ai]: 300,
     [Panel.Metadata]: 300,
     [Panel.Export]: 340,
@@ -232,12 +232,12 @@ export default function EditorView({
     [Panel.Filmstrip]: 180,
   };
 
-  const drawerMaxHeight = Math.max(drawerMinHeight, Math.round(rootSize.height * 0.75));
+  const drawerMaxHeight = Math.max(drawerMinHeight, Math.round(rootSize.height * 0.52));
   const drawerDefaultHeight = Math.min(
     drawerMaxHeight,
     Math.max(
       drawerMinHeight,
-      (activePanel && PANEL_PREFERRED_HEIGHT[activePanel]) || Math.round(rootSize.height * 0.45),
+      (activePanel && PANEL_PREFERRED_HEIGHT[activePanel]) || Math.round(rootSize.height * 0.40),
     ),
   );
   const drawerHeightValue = Math.max(

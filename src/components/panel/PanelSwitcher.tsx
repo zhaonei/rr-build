@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
 import {
+  MoreHorizontal,
   Palette,
   SlidersHorizontal,
   Info,
@@ -294,50 +295,82 @@ export function MobilePanelSwitcher({
   onPanelSelect: (id: Panel) => void;
   placement?: 'bottom' | 'right';
 }) {
-  const MOBILE_PANELS = [
-    Panel.Metadata,
-    Panel.Adjustments,
-    Panel.Crop,
-    Panel.Masks,
-    Panel.Ai,
-    Panel.Presets,
-    Panel.Lut,
-    Panel.Export,
-  ];
+  // The five entries a portrait edit actually needs; everything else lives behind the ellipsis
+  // so the bar stays fixed and thumb-reachable instead of turning into a scrolling strip.
+  const CORE_PANELS = [Panel.Adjustments, Panel.Crop, Panel.Masks, Panel.Presets, Panel.Lut];
+  const MORE_PANELS = [Panel.Metadata, Panel.Ai, Panel.Export, Panel.FolderTree];
 
   const { t } = useTranslation();
+  const [showMore, setShowMore] = useState(false);
   const isVertical = placement === 'right';
+  const isMoreActive = MORE_PANELS.includes(activePanel as Panel);
+
+  const renderButton = (id: Panel) => {
+    const Icon = PANEL_ICONS[id];
+    const isActive = activePanel === id;
+    return (
+      <button
+        key={id}
+        onClick={() => {
+          setShowMore(false);
+          onPanelSelect(id);
+        }}
+        aria-label={t(PANEL_TITLES[id])}
+        className={clsx(
+          'flex min-h-11 min-w-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[11px] transition-colors',
+          isActive ? 'bg-surface text-text-primary' : 'text-text-secondary active:bg-surface',
+        )}
+      >
+        <Icon size={16} />
+        <span className="max-w-24 truncate">{t(PANEL_TITLES[id])}</span>
+      </button>
+    );
+  };
 
   return (
     <div
       className={clsx(
-        'flex items-center gap-1 shrink-0 px-1.5 py-1 custom-scrollbar',
+        'relative flex shrink-0 items-center gap-1 px-1.5 py-1',
         isVertical
-          ? 'flex-col overflow-y-auto h-full border-l border-surface'
-          : 'flex-row overflow-x-auto w-full border-t border-surface',
+          ? 'h-full flex-col overflow-y-auto border-l border-surface'
+          : 'w-full border-t border-surface',
       )}
     >
-      {MOBILE_PANELS.map((id) => {
-        const Icon = PANEL_ICONS[id];
-        const isActive = activePanel === id;
+      {CORE_PANELS.map(renderButton)}
+      <button
+        onClick={() => setShowMore((prev) => !prev)}
+        aria-label="More"
+        className={clsx(
+          'flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md transition-colors',
+          isMoreActive || showMore ? 'bg-surface text-text-primary' : 'text-text-secondary active:bg-surface',
+        )}
+      >
+        <MoreHorizontal size={18} />
+      </button>
 
-        return (
-          <button
-            key={id}
-            onClick={() => onPanelSelect(id)}
-            aria-label={t(PANEL_TITLES[id])}
-            className={clsx(
-              'flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-md px-2.5 text-[11px] transition-colors',
-              isActive
-                ? 'bg-surface text-text-primary'
-                : 'text-text-secondary active:bg-surface',
-            )}
-          >
-            <Icon size={15} />
-            <span className="max-w-24 truncate">{t(PANEL_TITLES[id])}</span>
-          </button>
-        );
-      })}
+      {showMore && (
+        <div className="absolute bottom-full right-1 z-40 mb-1 grid w-44 grid-cols-2 gap-1 rounded-lg border border-surface bg-bg-secondary p-1.5 shadow-xl">
+          {MORE_PANELS.map((id) => {
+            const Icon = PANEL_ICONS[id];
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  setShowMore(false);
+                  onPanelSelect(id);
+                }}
+                className={clsx(
+                  'flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[10px]',
+                  activePanel === id ? 'bg-surface text-text-primary' : 'text-text-secondary active:bg-surface',
+                )}
+              >
+                <Icon size={18} />
+                <span className="truncate">{t(PANEL_TITLES[id])}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
